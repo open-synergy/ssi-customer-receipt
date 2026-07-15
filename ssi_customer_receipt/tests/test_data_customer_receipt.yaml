@@ -16,6 +16,20 @@ setup:
         name: "Test Customer Receipt Bank Journal"
         type: "bank"
 
+    - step: "Create restricted customer-receipt user (no account.move ACL)"
+      action: "create"
+      model: "res.users"
+      save_as: "receipt_user"
+      values:
+        name: "Receipt Only User"
+        login: "receipt_only_user"
+        groups_id:
+          - - 6
+            - 0
+            - - "REF: base.group_user"
+              - "REF: ssi_financial_accounting.customer_payment_user_group"
+              - "REF: ssi_financial_accounting.customer_payment_company_group"
+
 scenarios:
   - name: "Create Customer Receipt forces inbound customer defaults"
     steps:
@@ -170,3 +184,55 @@ scenarios:
           partner_type:
             type: "value"
             expected: "customer"
+
+  - name: "Restricted user (no account.move ACL) can create and post receipt via sudo"
+    options: {auto_refresh: true}
+    steps:
+      - step:
+          "Create receipt as restricted user -> must succeed (sudo materializes
+          account.move)"
+        action: "create"
+        model: "customer_receipt"
+        as_user: "receipt_user"
+        save_as: "receipt"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 250000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Assert draft + a delegated account.move was created"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          move_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert audit kept: sudo() in v14 keeps the real user as create_uid"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          create_uid:
+            type: "m2o"
+            expected: "REC: receipt_user"
+          move_id.create_uid:
+            type: "m2o"
+            expected: "REC: receipt_user"
+
+      - step: "Post receipt as restricted user -> must succeed (posts account.move)"
+        action: "call"
+        target: "receipt"
+        method: "action_post"
+        as_user: "receipt_user"
+
+      - step: "Assert posted"
+        action: "assert"
+        target: "receipt"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "posted"
