@@ -1,0 +1,172 @@
+setup:
+  steps:
+    - step: "Create customer partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "customer"
+      values:
+        name: "Test Customer Receipt Partner"
+        is_company: true
+
+    - step: "Create bank journal"
+      action: "create"
+      model: "account.journal"
+      save_as: "journal"
+      values:
+        name: "Test Customer Receipt Bank Journal"
+        type: "bank"
+
+scenarios:
+  - name: "Create Customer Receipt forces inbound customer defaults"
+    steps:
+      - step: "Create receipt without payment/partner type"
+        action: "create"
+        model: "account.customer_receipt"
+        save_as: "receipt"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 150000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Assert defaults applied"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          payment_type:
+            type: "value"
+            expected: "inbound"
+          partner_type:
+            type: "value"
+            expected: "customer"
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Global rule hides vendor payment from Customer Receipt"
+    steps:
+      - step: "Create vendor partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "vendor"
+        values:
+          name: "Test Vendor Payment Partner"
+          is_company: true
+
+      - step: "Create vendor payment via account.payment"
+        action: "create"
+        model: "account.payment"
+        save_as: "vendor_payment"
+        values:
+          payment_type: "outbound"
+          partner_type: "supplier"
+          partner_id: "REC: vendor.id"
+          amount: 200000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Create customer receipt via account.customer_receipt"
+        action: "create"
+        model: "account.customer_receipt"
+        save_as: "receipt"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 175000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Vendor payment is not visible through account.customer_receipt"
+        action: "search"
+        model: "account.customer_receipt"
+        as_user: "base.user_admin"
+        domain:
+          - ["id", "=", "REC: vendor_payment.id"]
+        save_as: "found_vendor"
+        expect_count: 0
+
+      - step: "Customer receipt is visible through account.customer_receipt"
+        action: "search"
+        model: "account.customer_receipt"
+        as_user: "base.user_admin"
+        domain:
+          - ["id", "=", "REC: receipt.id"]
+        save_as: "found_receipt"
+        expect_count: 1
+
+  - name: "Inherited workflow methods post and reset to draft"
+    steps:
+      - step: "Create receipt"
+        action: "create"
+        model: "account.customer_receipt"
+        save_as: "receipt"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 125000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Assert draft"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Post receipt"
+        action: "call"
+        target: "receipt"
+        method: "action_post"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after post"
+        action: "call"
+        target: "receipt"
+        method: "invalidate_cache"
+
+      - step: "Assert posted"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          state:
+            type: "value"
+            expected: "posted"
+
+      - step: "Reset receipt to draft"
+        action: "call"
+        target: "receipt"
+        method: "action_draft"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after draft"
+        action: "call"
+        target: "receipt"
+        method: "invalidate_cache"
+
+      - step: "Assert back to draft"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Create overrides forced vendor values back to customer receipt"
+    steps:
+      - step: "Create receipt trying to force outbound supplier"
+        action: "create"
+        model: "account.customer_receipt"
+        save_as: "receipt"
+        values:
+          payment_type: "outbound"
+          partner_type: "supplier"
+          partner_id: "REC: customer.id"
+          amount: 90000.0
+          journal_id: "REC: journal.id"
+
+      - step: "Assert create() forced inbound customer"
+        action: "assert"
+        target: "receipt"
+        asserts:
+          payment_type:
+            type: "value"
+            expected: "inbound"
+          partner_type:
+            type: "value"
+            expected: "customer"
