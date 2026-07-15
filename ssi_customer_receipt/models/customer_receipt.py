@@ -42,4 +42,25 @@ class CustomerReceipt(models.Model):
         for vals in vals_list:
             vals["payment_type"] = "inbound"
             vals["partner_type"] = "customer"
-        return super().create(vals_list)
+        # account.payment is delegated (_inherits) to account.move, so ORM create
+        # materializes account.move + account.move.line under the caller's rights.
+        # Elevate so a user holding only `customer_receipt` ACL can create it.
+        # sudo() in Odoo 14 keeps env.uid = triggering user -> create_uid stays correct.
+        records = super(CustomerReceipt, self.sudo()).create(vals_list)
+        return records.with_env(self.env)
+
+    def write(self, vals):
+        # write triggers _synchronize_to_moves, touching account.move/move.line.
+        return super(CustomerReceipt, self.sudo()).write(vals)
+
+    def action_post(self):
+        # action_post calls move_id._post(), which needs account.move rights.
+        return super(CustomerReceipt, self.sudo()).action_post()
+
+    def action_draft(self):
+        # action_draft calls move_id.button_draft(), which needs account.move rights.
+        return super(CustomerReceipt, self.sudo()).action_draft()
+
+    def action_cancel(self):
+        # action_cancel calls move_id.button_cancel(), which needs account.move rights.
+        return super(CustomerReceipt, self.sudo()).action_cancel()
