@@ -656,6 +656,11 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: ssi_customer_receipt
+#: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__operating_unit_id
+msgid "Operating Unit"
+msgstr ""
+
+#. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__invoice_origin
 msgid "Origin"
 msgstr ""
