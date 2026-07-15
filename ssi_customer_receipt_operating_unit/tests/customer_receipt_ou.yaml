@@ -1,45 +1,43 @@
-setup:
-  steps:
-    - step: "Create customer partner"
-      action: "create"
-      model: "res.partner"
-      save_as: "customer"
-      values:
-        name: "Test Customer Receipt OU Partner"
-        is_company: true
-
-    - step: "Create partner for operating unit A"
-      action: "create"
-      model: "res.partner"
-      save_as: "ou_partner"
-      values:
-        name: "Test OU-A Partner"
-
-    - step: "Create operating unit A"
-      action: "create"
-      model: "operating.unit"
-      save_as: "ou"
-      values:
-        name: "Test Customer Receipt OU-A"
-        code: "CROUA"
-        partner_id: "REC: ou_partner.id"
-
-    - step: "Create bank journal scoped to operating unit A"
-      action: "create"
-      model: "account.journal"
-      save_as: "journal"
-      values:
-        name: "Test Customer Receipt OU Bank Journal"
-        code: "CROUJ"
-        type: "bank"
-        operating_unit_ids:
-          - - 6
-            - 0
-            - - "REC: ou.id"
-
 scenarios:
   - name: "Posted receipt propagates operating unit to move and all move lines"
     steps:
+      - step: "Create customer partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "customer"
+        values:
+          name: "Test Customer Receipt OU Partner 1"
+          is_company: true
+
+      - step: "Create partner for operating unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou_partner"
+        values:
+          name: "Test OU-A Partner 1"
+
+      - step: "Create operating unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou"
+        values:
+          name: "Test Customer Receipt OU-A 1"
+          code: "OUA1"
+          partner_id: "REC: ou_partner.id"
+
+      - step: "Create bank journal scoped to operating unit A"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal"
+        values:
+          name: "Test Customer Receipt OU Bank Journal 1"
+          code: "CRJ1"
+          type: "bank"
+          operating_unit_ids:
+            - - 6
+              - 0
+              - - "REC: ou.id"
+
       - step: "Create receipt with operating unit A"
         action: "create"
         model: "customer_receipt"
@@ -120,6 +118,43 @@ scenarios:
 
   - name: "Operating Unit record rule scopes customer receipt visibility"
     steps:
+      - step: "Create customer partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "customer"
+        values:
+          name: "Test Customer Receipt OU Partner 2"
+          is_company: true
+
+      - step: "Create partner for operating unit A"
+        action: "create"
+        model: "res.partner"
+        save_as: "ou_partner"
+        values:
+          name: "Test OU-A Partner 2"
+
+      - step: "Create operating unit A"
+        action: "create"
+        model: "operating.unit"
+        save_as: "ou"
+        values:
+          name: "Test Customer Receipt OU-A 2"
+          code: "OUA2"
+          partner_id: "REC: ou_partner.id"
+
+      - step: "Create bank journal scoped to operating unit A"
+        action: "create"
+        model: "account.journal"
+        save_as: "journal"
+        values:
+          name: "Test Customer Receipt OU Bank Journal 2"
+          code: "CRJ2"
+          type: "bank"
+          operating_unit_ids:
+            - - 6
+              - 0
+              - - "REC: ou.id"
+
       - step: "Create receipt with operating unit A"
         action: "create"
         model: "customer_receipt"
@@ -135,15 +170,15 @@ scenarios:
         model: "res.partner"
         save_as: "ou_partner_b"
         values:
-          name: "Test OU-B Partner"
+          name: "Test OU-B Partner 2"
 
       - step: "Create operating unit B"
         action: "create"
         model: "operating.unit"
         save_as: "ou_b"
         values:
-          name: "Test Customer Receipt OU-B"
-          code: "CROUB"
+          name: "Test Customer Receipt OU-B 2"
+          code: "OUB2"
           partner_id: "REC: ou_partner_b.id"
 
       - step: "Create user allowed on operating unit A"
