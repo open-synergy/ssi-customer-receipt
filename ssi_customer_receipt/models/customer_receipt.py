@@ -5,7 +5,7 @@
 from odoo import api, fields, models
 
 
-class AccountCustomerReceipt(models.Model):
+class CustomerReceipt(models.Model):
     """Dedicated model for Customer Receipt on the shared account_payment table.
 
     ``account.payment`` is used for both customer receipts and vendor payments,
@@ -25,7 +25,7 @@ class AccountCustomerReceipt(models.Model):
     ``account.payment`` in ``ssi_financial_accounting``.
     """
 
-    _name = "account.customer_receipt"
+    _name = "customer_receipt"
     _inherit = "account.payment"
     _table = "account_payment"
     _description = "Customer Receipt"

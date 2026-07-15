@@ -21,7 +21,7 @@ scenarios:
     steps:
       - step: "Create receipt without payment/partner type"
         action: "create"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         save_as: "receipt"
         values:
           partner_id: "REC: customer.id"
@@ -63,27 +63,27 @@ scenarios:
           amount: 200000.0
           journal_id: "REC: journal.id"
 
-      - step: "Create customer receipt via account.customer_receipt"
+      - step: "Create customer receipt via customer_receipt"
         action: "create"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         save_as: "receipt"
         values:
           partner_id: "REC: customer.id"
           amount: 175000.0
           journal_id: "REC: journal.id"
 
-      - step: "Vendor payment is not visible through account.customer_receipt"
+      - step: "Vendor payment is not visible through customer_receipt"
         action: "search"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         as_user: "base.user_admin"
         domain:
           - ["id", "=", "REC: vendor_payment.id"]
         save_as: "found_vendor"
         expect_count: 0
 
-      - step: "Customer receipt is visible through account.customer_receipt"
+      - step: "Customer receipt is visible through customer_receipt"
         action: "search"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         as_user: "base.user_admin"
         domain:
           - ["id", "=", "REC: receipt.id"]
@@ -94,7 +94,7 @@ scenarios:
     steps:
       - step: "Create receipt"
         action: "create"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         save_as: "receipt"
         values:
           partner_id: "REC: customer.id"
@@ -151,7 +151,7 @@ scenarios:
     steps:
       - step: "Create receipt trying to force outbound supplier"
         action: "create"
-        model: "account.customer_receipt"
+        model: "customer_receipt"
         save_as: "receipt"
         values:
           payment_type: "outbound"

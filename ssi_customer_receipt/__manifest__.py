@@ -18,8 +18,8 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "security/ir_rule/account_customer_receipt.xml",
-        "views/account_customer_receipt_views.xml",
+        "security/ir_rule/customer_receipt.xml",
+        "views/customer_receipt_views.xml",
     ],
     "demo": [],
     "uninstall_hook": "uninstall_hook",
