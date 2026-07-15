@@ -6,7 +6,7 @@
 Customer Receipt
 ================
 
-This module provides a dedicated model ``account.customer_receipt`` that exposes
+This module provides a dedicated model ``customer_receipt`` that exposes
 **only** customer receipts (inbound payments from customers) while reusing the
 physical ``account_payment`` table and inheriting every method of
 ``account.payment``. Having a dedicated model makes it possible to target access

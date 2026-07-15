@@ -8,6 +8,6 @@ from odoo.tests import tagged
 
 
 @tagged("post_install", "-at_install")
-class TestAccountCustomerReceipt(YamlTransactionCase):
-    def test_account_customer_receipt(self):
-        self.run_yaml_scenario("test_data_account_customer_receipt.yaml")
+class TestCustomerReceipt(YamlTransactionCase):
+    def test_customer_receipt(self):
+        self.run_yaml_scenario("test_data_customer_receipt.yaml")

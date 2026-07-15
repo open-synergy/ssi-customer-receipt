@@ -6,9 +6,9 @@ from . import models  # noqa: F401
 
 
 def uninstall_hook(cr, registry):
-    """Remove the model metadata of ``account.customer_receipt`` manually.
+    """Remove the model metadata of ``customer_receipt`` manually.
 
-    ``account.customer_receipt`` shares the physical table ``account_payment``
+    ``customer_receipt`` shares the physical table ``account_payment``
     with ``account.payment`` (``_table = "account_payment"``). During a normal
     uninstall Odoo unlinks the ``ir.model`` record of this model, which triggers
     ``ir.model._drop_table()`` and would run ``DROP TABLE account_payment
@@ -24,9 +24,9 @@ def uninstall_hook(cr, registry):
         WHERE model IN ('ir.model', 'ir.model.fields')
           AND res_id IN (
               SELECT id FROM ir_model
-              WHERE model = 'account.customer_receipt'
+              WHERE model = 'customer_receipt'
           )
         """
     )
-    cr.execute("DELETE FROM ir_model_fields WHERE model = 'account.customer_receipt'")
-    cr.execute("DELETE FROM ir_model WHERE model = 'account.customer_receipt'")
+    cr.execute("DELETE FROM ir_model_fields WHERE model = 'customer_receipt'")
+    cr.execute("DELETE FROM ir_model WHERE model = 'customer_receipt'")
