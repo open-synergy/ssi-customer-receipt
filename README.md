@@ -18,6 +18,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [ssi_customer_receipt](ssi_customer_receipt/) | 14.0.2.1.0 |  | Customer Receipt
+[ssi_customer_receipt_operating_unit](ssi_customer_receipt_operating_unit/) | 14.0.1.0.0 |  | Customer Receipt + Operating Unit
 
 [//]: # (end addons)
 
