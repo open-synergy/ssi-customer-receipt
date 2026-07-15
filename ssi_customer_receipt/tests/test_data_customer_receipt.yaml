@@ -16,20 +16,6 @@ setup:
         name: "Test Customer Receipt Bank Journal"
         type: "bank"
 
-    - step: "Create restricted customer-receipt user (no account.move ACL)"
-      action: "create"
-      model: "res.users"
-      save_as: "receipt_user"
-      values:
-        name: "Receipt Only User"
-        login: "receipt_only_user"
-        groups_id:
-          - - 6
-            - 0
-            - - "REF: base.group_user"
-              - "REF: ssi_financial_accounting.customer_payment_user_group"
-              - "REF: ssi_financial_accounting.customer_payment_company_group"
-
 scenarios:
   - name: "Create Customer Receipt forces inbound customer defaults"
     steps:
@@ -188,6 +174,20 @@ scenarios:
   - name: "Restricted user (no account.move ACL) can create and post receipt via sudo"
     options: {auto_refresh: true}
     steps:
+      - step: "Create restricted customer-receipt user (no account.move ACL)"
+        action: "create"
+        model: "res.users"
+        save_as: "receipt_user"
+        values:
+          name: "Receipt Only User"
+          login: "receipt_only_user"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF: ssi_financial_accounting.customer_payment_user_group"
+                - "REF: ssi_financial_accounting.customer_payment_company_group"
+
       - step:
           "Create receipt as restricted user -> must succeed (sudo materializes
           account.move)"
