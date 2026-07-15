@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<!-- Global rule: this model is, by definition, a customer receipt only.
+     Being global (no group), it is ANDed with every other rule and applies to
+     all users (admin included) so that vendor payments (outbound/supplier)
+     stored in the shared account_payment table are never returned here. -->
+<record id="account_customer_receipt_global_rule" model="ir.rule">
+    <field name="name">Customer Receipt - Only Inbound Customer Payment</field>
+    <field name="model_id" ref="model_account_customer_receipt" />
+    <!-- No `groups`: an ir.rule without groups is a global rule (ANDed with
+         every group rule and applied to all non-superuser users). -->
+    <field
+            name="domain_force"
+        >['&amp;', ('payment_type', '=', 'inbound'), ('partner_type', '=', 'customer')]</field>
+    <field name="perm_read" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<!-- Data ownership rules (reuse ssi_financial_accounting customer payment groups) -->
+<record id="account_customer_receipt_company_rule" model="ir.rule">
+    <field name="name">Customer Receipt - Responsible to company data</field>
+    <field name="model_id" ref="model_account_customer_receipt" />
+    <field
+            name="groups"
+            eval="[(4, ref('ssi_financial_accounting.customer_payment_company_group'))]"
+        />
+    <field name="domain_force">[('company_id', '=', user.company_id.id)]</field>
+    <field name="perm_unlink" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+</record>
+
+<record id="account_customer_receipt_companies_rule" model="ir.rule">
+    <field
+            name="name"
+        >Customer Receipt - Responsible to company and all child companies data</field>
+    <field name="model_id" ref="model_account_customer_receipt" />
+    <field
+            name="groups"
+            eval="[(4, ref('ssi_financial_accounting.customer_payment_company_child_group'))]"
+        />
+    <field name="domain_force">[('company_id', 'in', user.company_ids.ids)]</field>
+    <field name="perm_unlink" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+</record>
+
+<record id="account_customer_receipt_all_rule" model="ir.rule">
+    <field name="name">Customer Receipt - All</field>
+    <field name="model_id" ref="model_account_customer_receipt" />
+    <field
+            name="groups"
+            eval="[(4, ref('ssi_financial_accounting.customer_payment_all_group'))]"
+        />
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="perm_unlink" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+</record>
+</odoo>
