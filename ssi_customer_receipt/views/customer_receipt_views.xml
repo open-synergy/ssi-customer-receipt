@@ -59,6 +59,12 @@
                     name="attrs"
                 >{'invisible': [('unmark_as_sent_ok','=',False)]}</attribute>
         </xpath>
+        <xpath expr="//field[@name='payment_type']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='partner_type']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
         <xpath expr="//sheet/group[1]" position="after">
             <notebook>
                 <page name="policy" string="Policies" groups="base.group_system">
