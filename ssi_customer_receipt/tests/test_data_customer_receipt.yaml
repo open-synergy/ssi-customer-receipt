@@ -24,16 +24,6 @@ setup:
         name: "Test Customer Receipt Bank Journal 2"
         type: "bank"
 
-    - step: "Create manual receivable account (T-16: reconcile required)"
-      action: "create"
-      model: "account.account"
-      save_as: "receivable_account_2"
-      values:
-        name: "Test Customer Receipt Manual Receivable"
-        code: "TCR-REC-2"
-        user_type_id: "REF: account.data_account_type_receivable"
-        reconcile: true
-
 scenarios:
   - name: "Create Customer Receipt forces inbound customer defaults"
     steps:
@@ -307,6 +297,16 @@ scenarios:
 
   - name: "Manual destination account survives save when set after the journal"
     steps:
+      - step: "Create manual receivable account (T-16: reconcile required)"
+        action: "create"
+        model: "account.account"
+        save_as: "receivable_account_2"
+        values:
+          name: "Test Customer Receipt Manual Receivable"
+          code: "TCR-REC-2"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
       - step: "Fill partner, journal, then override the destination account manually"
         action: "form"
         model: "customer_receipt"
@@ -333,6 +333,16 @@ scenarios:
   - name:
       "Changing the journal after setting the account resets it to core's computed value"
     steps:
+      - step: "Create a second manual receivable account (T-16: reconcile required)"
+        action: "create"
+        model: "account.account"
+        save_as: "receivable_account_3"
+        values:
+          name: "Test Customer Receipt Manual Receivable 2"
+          code: "TCR-REC-3"
+          user_type_id: "REF: account.data_account_type_receivable"
+          reconcile: true
+
       - step: "Set journal, override the account, then change the journal again"
         action: "form"
         model: "customer_receipt"
@@ -340,7 +350,7 @@ scenarios:
         ops:
           - set: {partner_id: "REC: customer"}
           - set: {journal_id: "REC: journal"}
-          - set: {destination_account_id: "REC: receivable_account_2"}
+          - set: {destination_account_id: "REC: receivable_account_3"}
           - set: {journal_id: "REC: journal_2"}
           - assert:
               destination_account_id:
