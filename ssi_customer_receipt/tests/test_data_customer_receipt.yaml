@@ -16,6 +16,24 @@ setup:
         name: "Test Customer Receipt Bank Journal"
         type: "bank"
 
+    - step: "Create second bank journal"
+      action: "create"
+      model: "account.journal"
+      save_as: "journal_2"
+      values:
+        name: "Test Customer Receipt Bank Journal 2"
+        type: "bank"
+
+    - step: "Create manual receivable account (T-16: reconcile required)"
+      action: "create"
+      model: "account.account"
+      save_as: "receivable_account_2"
+      values:
+        name: "Test Customer Receipt Manual Receivable"
+        code: "TCR-REC-2"
+        user_type_id: "REF: account.data_account_type_receivable"
+        reconcile: true
+
 scenarios:
   - name: "Create Customer Receipt forces inbound customer defaults"
     steps:
@@ -236,3 +254,95 @@ scenarios:
           state:
             type: "value"
             expected: "posted"
+
+  - name: "Standalone views: no inherit_id, mode primary (issue #12)"
+    steps:
+      - step: "Get form view"
+        action: "ref"
+        xml_id: "ssi_customer_receipt.customer_receipt_view_form"
+        save_as: "view_form"
+
+      - step: "Get tree view"
+        action: "ref"
+        xml_id: "ssi_customer_receipt.customer_receipt_view_tree"
+        save_as: "view_tree"
+
+      - step: "Get search view"
+        action: "ref"
+        xml_id: "ssi_customer_receipt.customer_receipt_view_search"
+        save_as: "view_search"
+
+      - step: "Assert form view is a standalone primary fork"
+        action: "assert"
+        target: "view_form"
+        asserts:
+          inherit_id:
+            type: "value"
+            operator: "is_falsy"
+          mode:
+            type: "value"
+            expected: "primary"
+
+      - step: "Assert tree view is a standalone primary fork"
+        action: "assert"
+        target: "view_tree"
+        asserts:
+          inherit_id:
+            type: "value"
+            operator: "is_falsy"
+          mode:
+            type: "value"
+            expected: "primary"
+
+      - step: "Assert search view is a standalone primary fork"
+        action: "assert"
+        target: "view_search"
+        asserts:
+          inherit_id:
+            type: "value"
+            operator: "is_falsy"
+          mode:
+            type: "value"
+            expected: "primary"
+
+  - name: "Manual destination account survives save when set after the journal"
+    steps:
+      - step: "Fill partner, journal, then override the destination account manually"
+        action: "form"
+        model: "customer_receipt"
+        save_as: "receipt_manual_account"
+        values:
+          partner_id: "REC: customer"
+          journal_id: "REC: journal"
+          destination_account_id: "REC: receivable_account_2"
+          amount: 300000.0
+        asserts:
+          destination_account_id:
+            type: "m2o"
+            expected: "REC: receivable_account_2"
+        save: true
+
+      - step: "Assert the manual account persisted after save"
+        action: "assert"
+        target: "receipt_manual_account"
+        asserts:
+          destination_account_id:
+            type: "m2o"
+            expected: "REC: receivable_account_2"
+
+  - name:
+      "Changing the journal after setting the account resets it to core's computed value"
+    steps:
+      - step: "Set journal, override the account, then change the journal again"
+        action: "form"
+        model: "customer_receipt"
+        save: false
+        ops:
+          - set: {partner_id: "REC: customer"}
+          - set: {journal_id: "REC: journal"}
+          - set: {destination_account_id: "REC: receivable_account_2"}
+          - set: {journal_id: "REC: journal_2"}
+          - assert:
+              destination_account_id:
+                type: "m2o"
+                expected: "REC: customer.property_account_receivable_id"

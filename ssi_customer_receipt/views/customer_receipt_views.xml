@@ -3,91 +3,335 @@
      Copyright 2026 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-<!-- Primary tree view rebound to customer_receipt -->
+<!-- Standalone tree view for customer_receipt.
+     No inherit_id: reusing account.payment's primary view read_combined()
+     extension views (notably ssi_financial_accounting.account_payment_view_form's
+     Policies page), producing duplicated content. See issue #12. -->
 <record id="customer_receipt_view_tree" model="ir.ui.view">
     <field name="name">customer_receipt tree</field>
     <field name="model">customer_receipt</field>
-    <field name="inherit_id" ref="account.view_account_payment_tree" />
+    <field name="inherit_id" eval="False" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
-        <data />
+        <tree edit="false" sample="1">
+            <header>
+                <button name="action_post" type="object" string="Confirm" />
+            </header>
+            <field name="date" />
+            <field name="name" />
+            <field name="partner_id" string="Customer" />
+            <field name="amount" sum="Amount" />
+            <field
+                    name="state"
+                    widget="badge"
+                    decoration-info="state == 'draft'"
+                    decoration-success="state == 'posted'"
+                />
+            <field name="journal_id" optional="hide" />
+            <field name="payment_method_id" optional="hide" />
+            <field
+                    name="currency_id"
+                    groups="base.group_multi_currency"
+                    optional="hide"
+                />
+            <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+        </tree>
     </field>
 </record>
 
-<!-- Primary search view rebound to customer_receipt -->
+<!-- Standalone search view for customer_receipt. -->
 <record id="customer_receipt_view_search" model="ir.ui.view">
     <field name="name">customer_receipt search</field>
     <field name="model">customer_receipt</field>
-    <field name="inherit_id" ref="account.view_account_payment_search" />
+    <field name="inherit_id" eval="False" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
-        <data />
+        <search string="Customer Receipts">
+            <field
+                    name="name"
+                    string="Receipt"
+                    filter_domain="['|', '|', ('name', 'ilike', self), ('partner_id', 'ilike', self), ('ref', 'ilike', self)]"
+                />
+            <field name="partner_id" string="Customer" />
+            <field name="journal_id" />
+            <separator />
+            <filter
+                    string="Draft"
+                    name="state_draft"
+                    domain="[('state', '=', 'draft')]"
+                />
+            <filter
+                    string="Posted"
+                    name="state_posted"
+                    domain="[('state', '=', 'posted')]"
+                />
+            <separator />
+            <filter string="Receipt Date" name="date" date="date" />
+            <separator />
+            <field name="company_id" groups="base.group_multi_company" />
+            <filter
+                    string="Customer"
+                    name="partner"
+                    domain="[]"
+                    context="{'group_by': 'partner_id'}"
+                />
+            <filter
+                    string="Journal"
+                    name="journal"
+                    domain="[]"
+                    context="{'group_by': 'journal_id'}"
+                />
+            <filter
+                    string="Payment Method"
+                    name="paymentmethod"
+                    domain="[]"
+                    context="{'group_by': 'payment_method_id'}"
+                />
+            <filter
+                    string="Status"
+                    name="state"
+                    domain="[]"
+                    context="{'group_by': 'state'}"
+                />
+            <filter
+                    string="Receipt Date"
+                    name="groupby_date"
+                    domain="[]"
+                    context="{'group_by': 'date'}"
+                />
+            <filter
+                    string="Currency"
+                    name="currency"
+                    domain="[]"
+                    context="{'group_by': 'currency_id'}"
+                    groups="base.group_multi_currency"
+                />
+            <filter
+                    string="Company"
+                    name="company"
+                    domain="[]"
+                    context="{'group_by': 'company_id'}"
+                    groups="base.group_multi_company"
+                />
+        </search>
     </field>
 </record>
 
-<!-- Primary form view rebound to customer_receipt.
-     The policy button attributes and the Policies page are replicated from
-     ssi_financial_accounting.account_payment_view_form, because that view
-     inherits the core account.payment form (not this primary view). -->
+<!-- Standalone form view for customer_receipt.
+     Journal is filled before Destination Account in the same header_left
+     group (Aturan 9): _compute_destination_account_id depends on journal_id,
+     partner_id, partner_type and is_internal_transfer
+     (odoo/addons/account/models/account_payment.py:408), so a manually set
+     account must not be overwritten once the journal is picked. See issue #12.
+     Journal, Payment Method and Destination Account stay in header_left
+     (not the Accounting page) by explicit user decision, 2026-09-27 —
+     deviation from 07-views.md Aturan 7, documented in the issue. -->
 <record id="customer_receipt_view_form" model="ir.ui.view">
     <field name="name">customer_receipt form</field>
     <field name="model">customer_receipt</field>
-    <field name="inherit_id" ref="account.view_account_payment_form" />
+    <field name="inherit_id" eval="False" />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
-        <xpath expr="//button[@name='action_post']" position="attributes">
-            <attribute
-                    name="attrs"
-                >{'invisible': [('confirm_ok','=',False)]}</attribute>
-        </xpath>
-        <xpath expr="//button[@name='action_draft']" position="attributes">
-            <attribute
-                    name="attrs"
-                >{'invisible': [('restart_ok','=',False)]}</attribute>
-            <attribute name="groups" />
-        </xpath>
-        <xpath expr="//button[@name='action_cancel']" position="attributes">
-            <attribute name="attrs">{'invisible': [('cancel_ok','=',False)]}</attribute>
-        </xpath>
-        <xpath expr="//button[@name='mark_as_sent']" position="attributes">
-            <attribute
-                    name="attrs"
-                >{'invisible': [('mark_as_sent_ok','=',False)]}</attribute>
-        </xpath>
-        <xpath expr="//button[@name='unmark_as_sent']" position="attributes">
-            <attribute
-                    name="attrs"
-                >{'invisible': [('unmark_as_sent_ok','=',False)]}</attribute>
-        </xpath>
-        <xpath expr="//field[@name='payment_type']" position="attributes">
-            <attribute name="invisible">1</attribute>
-        </xpath>
-        <xpath expr="//field[@name='partner_type']" position="attributes">
-            <attribute name="invisible">1</attribute>
-        </xpath>
-        <xpath expr="//sheet/group[1]" position="after">
-            <notebook>
-                <page name="policy" string="Policies" groups="base.group_system">
-                    <group name="policy_1" colspan="4" col="2">
-                        <field name="policy_template_id" groups="base.group_system" />
-                        <button
-                                name="action_reload_policy_template"
-                                type="object"
-                                string="Reload Template Policy"
-                                class="oe_highlight"
-                                icon="fa-refresh"
+        <form string="Customer Receipt">
+            <header>
+                <button
+                        name="action_post"
+                        string="Confirm"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('confirm_ok', '=', False)]}"
+                    />
+                <button
+                        name="action_draft"
+                        string="Reset To Draft"
+                        type="object"
+                        class="btn btn-secondary"
+                        attrs="{'invisible': [('restart_ok', '=', False)]}"
+                    />
+                <button
+                        name="action_cancel"
+                        string="Cancel"
+                        type="object"
+                        attrs="{'invisible': [('cancel_ok', '=', False)]}"
+                    />
+                <button
+                        name="mark_as_sent"
+                        string="Mark as Sent"
+                        type="object"
+                        attrs="{'invisible': [('mark_as_sent_ok', '=', False)]}"
+                    />
+                <button
+                        name="unmark_as_sent"
+                        string="Unmark as Sent"
+                        type="object"
+                        attrs="{'invisible': [('unmark_as_sent_ok', '=', False)]}"
+                    />
+                <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,posted"
+                    />
+            </header>
+            <sheet>
+                <!-- Invisible fields: kept for attrs/domain use only -->
+                <field name="id" invisible="1" />
+                <field name="is_move_sent" invisible="1" />
+                <field name="is_reconciled" invisible="1" />
+                <field name="is_matched" invisible="1" />
+                <field name="payment_method_code" invisible="1" />
+                <field name="show_partner_bank_account" invisible="1" />
+                <field name="require_partner_bank_account" invisible="1" />
+                <field name="hide_payment_method" invisible="1" />
+                <field name="available_partner_bank_ids" invisible="1" />
+                <field name="available_payment_method_ids" invisible="1" />
+                <field name="suitable_journal_ids" invisible="1" />
+                <field name="country_code" invisible="1" />
+                <field name="payment_type" invisible="1" />
+                <field name="partner_type" invisible="1" />
+
+                <div class="oe_button_box" name="button_box">
+                    <button
+                            name="button_open_invoices"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                            attrs="{'invisible': [('reconciled_invoices_count', '=', 0)]}"
+                        >
+                        <field name="reconciled_invoices_count" />
+                        <span
+                                attrs="{'invisible': [('reconciled_invoices_count', '&gt;', 1)]}"
+                            >Invoice</span>
+                        <span
+                                attrs="{'invisible': [('reconciled_invoices_count', '&lt;=', 1)]}"
+                            >Invoices</span>
+                    </button>
+                    <button
+                            name="button_open_statements"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-bars"
+                            attrs="{'invisible': [('reconciled_statements_count', '=', 0)]}"
+                        >
+                        <field name="reconciled_statements_count" />
+                        <span
+                                attrs="{'invisible': [('reconciled_statements_count', '&gt;', 1)]}"
+                            >Statement</span>
+                        <span
+                                attrs="{'invisible': [('reconciled_statements_count', '&lt;=', 1)]}"
+                            >Statements</span>
+                    </button>
+                </div>
+
+                <div class="oe_title" attrs="{'invisible': [('state', '=', 'draft')]}">
+                    <h1>
+                        <field
+                                name="name"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                    </h1>
+                </div>
+
+                <group name="header" colspan="4" col="2">
+                    <group name="header_left" colspan="1" col="2">
+                        <field
+                                name="partner_id"
+                                context="{'default_is_company': True}"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                        <field
+                                name="journal_id"
+                                widget="selection"
+                                domain="[('type', 'in', ('bank', 'cash'))]"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                        <field
+                                name="payment_method_id"
+                                widget="radio"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')], 'invisible': [('hide_payment_method', '=', True)]}"
+                            />
+                        <field
+                                name="partner_bank_id"
+                                context="{'default_partner_id': partner_id}"
+                                attrs="{'invisible': [('show_partner_bank_account', '=', False)], 'required': [('require_partner_bank_account', '=', True)], 'readonly': [('state', '!=', 'draft')]}"
+                            />
+                        <field
+                                name="destination_account_id"
+                                options="{'no_create': True}"
+                                required="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
                             />
                     </group>
-                    <group name="policy_2" colspan="4" col="2">
-                        <field name="confirm_ok" />
-                        <field name="mark_as_sent_ok" />
-                        <field name="unmark_as_sent_ok" />
-                        <field name="cancel_ok" />
-                        <field name="restart_ok" />
+                    <group name="header_right" colspan="1" col="2">
+                        <field
+                                name="date"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}"
+                            />
+                        <label for="amount" />
+                        <div name="amount_div" class="o_row">
+                            <field
+                                    name="amount"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                            <field
+                                    name="currency_id"
+                                    options="{'no_create': True, 'no_open': True}"
+                                    required="1"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                    groups="base.group_multi_currency"
+                                />
+                        </div>
+                        <field name="ref" string="Memo" />
+                        <field name="company_id" groups="base.group_multi_company" />
                     </group>
-                </page>
-            </notebook>
-        </xpath>
+                </group>
+
+                <notebook>
+                    <page name="accounting" string="Accounting">
+                        <group name="accounting_1" colspan="4" col="2">
+                            <field
+                                    name="move_id"
+                                    required="0"
+                                    readonly="1"
+                                    groups="account.group_account_readonly"
+                                    attrs="{'invisible': [('id', '=', False)]}"
+                                />
+                        </group>
+                    </page>
+                    <page name="policy" string="Policies" groups="base.group_system">
+                        <group name="policy_1" colspan="4" col="2">
+                            <field
+                                    name="policy_template_id"
+                                    groups="base.group_system"
+                                />
+                            <button
+                                    name="action_reload_policy_template"
+                                    type="object"
+                                    string="Reload Template Policy"
+                                    class="oe_highlight"
+                                    icon="fa-refresh"
+                                />
+                        </group>
+                        <group name="policy_2" colspan="4" col="2">
+                            <field name="confirm_ok" />
+                            <field name="mark_as_sent_ok" />
+                            <field name="unmark_as_sent_ok" />
+                            <field name="cancel_ok" />
+                            <field name="restart_ok" />
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" groups="base.group_user" />
+                <field name="activity_ids" />
+                <field name="message_ids" />
+            </div>
+        </form>
     </field>
 </record>
 
