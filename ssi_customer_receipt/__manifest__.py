@@ -15,12 +15,14 @@
     "application": False,
     "depends": [
         "ssi_financial_accounting",
+        "web_tour",
     ],
     "data": [
         "security/ir.model.access.csv",
         "security/ir_rule/customer_receipt.xml",
         "policy_template/customer_receipt.xml",
         "views/customer_receipt_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
     "uninstall_hook": "uninstall_hook",

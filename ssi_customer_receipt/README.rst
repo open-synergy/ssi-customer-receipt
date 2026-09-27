@@ -13,6 +13,18 @@ physical ``account_payment`` table and inheriting every method of
 rights and record rules to customer receipts independently from vendor payments.
 
 
+Work Instruction
+================
+
+* `Create Customer Receipt <docs/customer_receipt/01-create.html>`_
+* `Edit Customer Receipt <docs/customer_receipt/02-edit.html>`_
+* `Confirm Customer Receipt <docs/customer_receipt/04-confirm.html>`_
+* `Cancel Customer Receipt <docs/customer_receipt/10-cancel.html>`_
+* `Reset to Draft Customer Receipt <docs/customer_receipt/12-restart.html>`_
+* `Print Customer Receipt <docs/customer_receipt/14-print.html>`_
+* `Reload Template Policy — Customer Receipt <docs/customer_receipt/15-reload-template-policy.html>`_
+
+
 Installation
 ============
 
