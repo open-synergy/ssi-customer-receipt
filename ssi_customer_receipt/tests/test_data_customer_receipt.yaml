@@ -356,3 +356,114 @@ scenarios:
               destination_account_id:
                 type: "m2o"
                 expected: "REC: customer.property_account_receivable_id"
+
+  - name:
+      "Policy template auto-assigned on create: validator sees confirm/cancel in draft,
+      restart after post (issue #13)"
+    options: {auto_refresh: true}
+    steps:
+      - step:
+          "Create receipt as validator (base.user_admin holds
+          customer_payment_validator_group)"
+        action: "create"
+        model: "customer_receipt"
+        as_user: "base.user_admin"
+        save_as: "receipt_policy"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 400000.0
+          journal_id: "REC: journal.id"
+
+      - step:
+          "Assert module template auto-assigned and policy fields for a validator in
+          draft"
+        action: "assert"
+        target: "receipt_policy"
+        refresh: true
+        as_user: "base.user_admin"
+        asserts:
+          policy_template_id:
+            type: "m2o"
+            expected_xml_id: "ssi_customer_receipt.policy_template_customer_receipt"
+          confirm_ok:
+            type: "value"
+            expected: true
+          cancel_ok:
+            type: "value"
+            expected: true
+          restart_ok:
+            type: "value"
+            expected: false
+          mark_as_sent_ok:
+            type: "value"
+            expected: false
+          unmark_as_sent_ok:
+            type: "value"
+            expected: false
+
+      - step: "Post the receipt as validator"
+        action: "call"
+        target: "receipt_policy"
+        method: "action_post"
+        as_user: "base.user_admin"
+
+      - step: "Assert policy fields for a validator after posting"
+        action: "assert"
+        target: "receipt_policy"
+        refresh: true
+        as_user: "base.user_admin"
+        asserts:
+          confirm_ok:
+            type: "value"
+            expected: false
+          cancel_ok:
+            type: "value"
+            expected: false
+          restart_ok:
+            type: "value"
+            expected: true
+
+  - name:
+      "Policy template negative: plain user group (no validator) cannot confirm/cancel a
+      draft receipt (issue #13)"
+    options: {auto_refresh: true}
+    steps:
+      - step:
+          "Create a receipt-only user holding customer_payment_user_group but NOT
+          customer_payment_validator_group"
+        action: "create"
+        model: "res.users"
+        save_as: "policy_basic_user"
+        values:
+          name: "Customer Receipt Policy Basic User"
+          login: "customer_receipt_policy_basic_user"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF: ssi_financial_accounting.customer_payment_user_group"
+                - "REF: ssi_financial_accounting.customer_payment_company_group"
+
+      - step: "Create receipt as the plain user"
+        action: "create"
+        model: "customer_receipt"
+        as_user: "policy_basic_user"
+        save_as: "receipt_policy_basic"
+        values:
+          partner_id: "REC: customer.id"
+          amount: 120000.0
+          journal_id: "REC: journal.id"
+
+      - step:
+          "Assert plain user (no validator group) cannot confirm/cancel a draft receipt"
+        action: "assert"
+        target: "receipt_policy_basic"
+        refresh: true
+        as_user: "policy_basic_user"
+        asserts:
+          confirm_ok:
+            type: "value"
+            expected: false
+          cancel_ok:
+            type: "value"
+            expected: false

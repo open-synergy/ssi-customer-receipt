@@ -19,6 +19,7 @@
     "data": [
         "security/ir.model.access.csv",
         "security/ir_rule/customer_receipt.xml",
+        "policy_template/customer_receipt.xml",
         "views/customer_receipt_views.xml",
     ],
     "demo": [],
