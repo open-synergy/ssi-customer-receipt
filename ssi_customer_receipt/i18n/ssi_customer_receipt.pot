@@ -34,8 +34,27 @@ msgid "#Last Payment Line"
 msgstr ""
 
 #. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('reconciled_invoices_count', '&gt;', 1)]}\">Invoice</span>\n"
+"                        <span attrs=\"{'invisible': [('reconciled_invoices_count', '&lt;=', 1)]}\">Invoices</span>"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid ""
+"<span attrs=\"{'invisible': [('reconciled_statements_count', '&gt;', 1)]}\">Statement</span>\n"
+"                        <span attrs=\"{'invisible': [('reconciled_statements_count', '&lt;=', 1)]}\">Statements</span>"
+msgstr ""
+
+#. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__access_warning
 msgid "Access warning"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Accounting"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -70,6 +89,7 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__amount
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_tree
 msgid "Amount"
 msgstr ""
 
@@ -174,6 +194,11 @@ msgid "Can Unmark as Sent"
 msgstr ""
 
 #. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__invoice_cash_rounding_id
 msgid "Cash Rounding Method"
 msgstr ""
@@ -200,12 +225,19 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__company_id
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Company"
 msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__company_currency_id
 msgid "Company Currency"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_tree
+msgid "Confirm"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -225,7 +257,14 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__currency_id
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Currency"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_tree
+msgid "Customer"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -235,12 +274,14 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model,name:ssi_customer_receipt.model_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
 msgid "Customer Receipt"
 msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.actions.act_window,name:ssi_customer_receipt.customer_receipt_action
 #: model:ir.ui.menu,name:ssi_customer_receipt.customer_receipt_menu
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Customer Receipts"
 msgstr ""
 
@@ -280,6 +321,11 @@ msgstr ""
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__display_qr_code
 msgid "Display QR-code"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
+msgid "Draft"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -530,6 +576,7 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__journal_id
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Journal"
 msgstr ""
 
@@ -586,6 +633,16 @@ msgid ""
 "Check: Pay bill by check and print it from Odoo.\n"
 "Batch Deposit: Encase several customer checks at once by generating a batch deposit to submit to your bank. When encoding the bank statement in Odoo, you are suggested to reconcile the transaction with the batch deposit.To enable batch deposit, module account_batch_payment must be installed.\n"
 "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. To enable sepa credit transfer, module account_sepa must be installed "
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Mark as Sent"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Memo"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -682,6 +739,7 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__payment_method_id
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Payment Method"
 msgstr ""
 
@@ -741,6 +799,11 @@ msgid "Post Automatically"
 msgstr ""
 
 #. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
+msgid "Posted"
+msgstr ""
+
+#. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__posted_before
 msgid "Posted Before"
 msgstr ""
@@ -760,6 +823,16 @@ msgstr ""
 msgid ""
 "QR-code report URL to use to generate the QR-code to scan with a banking app"
 " to perform this payment."
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
+msgid "Receipt"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
+msgid "Receipt Date"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -812,6 +885,11 @@ msgstr ""
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__require_partner_bank_account
 msgid "Require Partner Bank Account"
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Reset To Draft"
 msgstr ""
 
 #. module: ssi_customer_receipt
@@ -886,6 +964,7 @@ msgstr ""
 
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,field_description:ssi_customer_receipt.field_customer_receipt__state
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_search
 msgid "Status"
 msgstr ""
 
@@ -1105,6 +1184,11 @@ msgstr ""
 #. module: ssi_customer_receipt
 #: model:ir.model.fields,help:ssi_customer_receipt.field_customer_receipt__activity_exception_decoration
 msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: ssi_customer_receipt
+#: model_terms:ir.ui.view,arch_db:ssi_customer_receipt.customer_receipt_view_form
+msgid "Unmark as Sent"
 msgstr ""
 
 #. module: ssi_customer_receipt
